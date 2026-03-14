@@ -47,7 +47,7 @@ npm run dev
 
 ## License
 
-Copyright © 2026 Jose [Your Full Name]
+Copyright © 2026 Jose Aguirre Torrez
 
 All rights reserved.
 
