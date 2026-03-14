@@ -1,4 +1,5 @@
 ## License
-Code is licensed under the MTI License.
+The source code is licensed under the MTI License.
 
-All artwork and visual assets are © 2026 Jose Aguirre and may not be used, copied or redistributed without permission.
+All artwork, characters, and visual assets are © 2026 Jose Aguirre.
+They may not be used, copied, modified, or redistributed without explicit permission.
