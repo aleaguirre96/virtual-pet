@@ -1,12 +1,16 @@
-import { VirtualPet } from "./VirtualPet";
+import { PhysicalState, VirtualPet } from "./VirtualPet";
 
 const pet = new VirtualPet()
 
 const petSprites = {
   sad: "/assets/pet/pet-sad.png",
   neutral: "/assets/pet/pet-neutral.png",
-  happy: "/assets/pet/pet-happy.png"
+  happy: "/assets/pet/pet-happy.png",
+  sleeping: "/assets/pet/pet-sleep-01.png"
 };
+
+let sleepFrame = 0;
+const sleepSprites = ["/assets/pet/pet-sleep-01.png", "/assets/pet/pet-sleep-02.png"];
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -30,16 +34,39 @@ buttonIncrease.addEventListener("click", () => {
   updatePetVisual()
 })
 
+petImage.addEventListener("click", () => {
+  if(pet.physicalState === PhysicalState.Sleeping) {
+    pet.wakeUp()
+    updatePetVisual()
+  }
+})
+
 function updatePetVisual() {
+  pet.updatePhysicalState();
   const mood = pet.getMood();
-  petImage.src = petSprites[mood];
+ 
   happinessText.textContent = pet.happiness.toString()
+
+  if(pet.physicalState === PhysicalState.Sleeping) {
+    petImage.src =  sleepSprites[0];
+  } else {
+    petImage.src = petSprites[mood];
+  }
+
+
   console.log("inside updatePetVisual" + petSprites[mood] )
 }
 
 updatePetVisual();
 
 setInterval(() => {
-  pet.decreaseHappiness(5)
+  pet.decreaseHappiness(10)
   updatePetVisual()
-}, 30000)
+}, 10000)
+
+setInterval(() => {
+  if (pet.physicalState === PhysicalState.Sleeping) {
+    sleepFrame = (sleepFrame + 1) % sleepSprites.length;
+    petImage.src = sleepSprites[sleepFrame];
+  }
+}, 500);
