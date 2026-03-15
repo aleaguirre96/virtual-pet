@@ -35,23 +35,6 @@ function App() {
     return petSprites[mood]
   }
 
-  /*function play() {
-    pet.increaseHappiness(5)
-    updatePetVisual()
-  }
-
-  function feed() {
-    pet.decreaseHunger(5)
-    updatePetVisual()
-  }
-
-  function wakeUp() {
-    if (pet.getPhysicalState() === PhysicalState.Sleeping) {
-      pet.wakeUp()
-      updatePetVisual()
-    }
-  }*/
-
   // Loop de decreaseHappiness 
   useEffect(() => {
     const loop = setInterval(() => {
@@ -95,25 +78,6 @@ function App() {
       updatePetVisual();
     }
   }
-
-  // Set image state
-  /*const getPetImage = () => {
-    if (pet.getPhysicalState() === PhysicalState.Sleeping) {
-      return "/scr/assests/pet/pet-sleep-01.png"
-    }
-
-    const mood = pet.getMood();
-    switch (mood) {
-      case PetMood.Happy:
-        return "/scr/assests/pet/pet-happy.png";
-      case PetMood.Neutral:
-        return "/scr/assests/pet/pet-neutral.png";
-      case PetMood.Sad:
-        return "/scr/assests/pet/pet-sad.png";
-      default:
-        return "/scr/assests/pet/pet-neutral.png";
-    }
-  }*/
 
   return (
     <>
