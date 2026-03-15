@@ -10,6 +10,8 @@ const petSprites = {
 };
 
 let sleepFrame = 0;
+let elapsedLogic = 0;
+const logicInterval = 10000;
 const sleepSprites = ["/assets/pet/pet-sleep-01.png", "/assets/pet/pet-sleep-02.png"];
 
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -30,7 +32,6 @@ const happinessText = document.querySelector<HTMLSpanElement>('#happiness')!
 
 buttonIncrease.addEventListener("click", () => {
   pet.increaseHappiness(5)
-  
   updatePetVisual()
 })
 
@@ -42,31 +43,37 @@ petImage.addEventListener("click", () => {
 })
 
 function updatePetVisual() {
-  pet.updatePhysicalState();
+  // pet.updatePhysicalState();
   const mood = pet.getMood();
- 
   happinessText.textContent = pet.happiness.toString()
 
   if(pet.physicalState === PhysicalState.Sleeping) {
-    petImage.src =  sleepSprites[0];
+    petImage.src =  sleepSprites[sleepFrame];
   } else {
     petImage.src = petSprites[mood];
   }
-
-
   console.log("inside updatePetVisual" + petSprites[mood] )
 }
 
-updatePetVisual();
-
+// Game loop
 setInterval(() => {
-  pet.decreaseHappiness(10)
-  updatePetVisual()
-}, 10000)
-
-setInterval(() => {
+  // Sleeping animation
   if (pet.physicalState === PhysicalState.Sleeping) {
     sleepFrame = (sleepFrame + 1) % sleepSprites.length;
     petImage.src = sleepSprites[sleepFrame];
   }
+
+  // Logic
+  elapsedLogic += 500;
+  if (elapsedLogic >= logicInterval) {
+    pet.decreaseHappiness(2);
+    pet.updatePhysicalState();
+    elapsedLogic = 0;
+  }
+  
+  // Update UI
+  updatePetVisual()
 }, 500);
+
+
+updatePetVisual();

@@ -15,8 +15,10 @@ export type PhysicalState = (typeof PhysicalState)[keyof typeof PhysicalState];
 export class VirtualPet {
     happiness: number = 50;
     physicalState: PhysicalState = PhysicalState.Awake;
-    lastSleepTime: number = Date.now();
-    sleepInterval: number = 20000;
+    lastWakeUpTime: number = Date.now();
+    startSleepTime: number = 0;
+    sleepInterval: number = 60000// 180000;
+    minSleepTime: number = 20000//60000; 
 
     increaseHappiness(amount: number) {
         this.happiness += amount;
@@ -45,19 +47,26 @@ export class VirtualPet {
     updatePhysicalState() {
         console.log("inside updatePhysical State")
         const now = Date.now();
-        if (now - this.lastSleepTime > this.sleepInterval) {
+        if (this.physicalState === PhysicalState.Awake && now - this.lastWakeUpTime >= this.sleepInterval) {
             this.sleep()
         }
-        console.log(now + " - " + this.lastSleepTime + " > " + this.sleepInterval);
-        console.log("now - lastSleepTime = " + (now - this.lastSleepTime))
+        console.log(now + " - " + this.lastWakeUpTime + " > " + this.sleepInterval);
+        console.log("now - lastWakeUpTime = " + (now - this.lastWakeUpTime))
     }
 
     wakeUp() {
-        this.physicalState = PhysicalState.Awake;
-        this.lastSleepTime = Date.now();
+        console.log("inside wakeup")
+        const now = Date.now()
+        if (now - this.startSleepTime >= this.minSleepTime) {
+            this.physicalState = PhysicalState.Awake;
+            this.lastWakeUpTime = Date.now();
+        }
+         console.log("now - startSleepTime = " + (now - this.startSleepTime))
+         console.log(now + " - " + this.startSleepTime + " >= " + this.minSleepTime);
     }
 
     sleep() {
         this.physicalState = PhysicalState.Sleeping;
+        this.startSleepTime = Date.now()
     }
 }
