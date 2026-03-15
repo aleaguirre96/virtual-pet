@@ -21,17 +21,26 @@ app.innerHTML = `
     <h1>Virtual Pet</h1>
     <img id="pet" src="/assets/pet/pet-neutral.png" width="200" />
     <br />
-    <button id="pet-button-increase">Increase</button>
+    <button id="pet-button-increase">Play</button>
     <p>Happiness: <span id="happiness">0</span></p>
+    <button id="pet-button-decrease-hunger">Feed</button>
+    <p>Hunger: <span id="hunger">0</span></p>
   </div>
 `
 
 const petImage = document.querySelector<HTMLImageElement>("#pet")!;
-const buttonIncrease = document.querySelector<HTMLButtonElement>('#pet-button-increase')!
+const buttonIncreaseHappiness = document.querySelector<HTMLButtonElement>('#pet-button-increase')!
 const happinessText = document.querySelector<HTMLSpanElement>('#happiness')!
+const buttonDecreaseHunger = document.querySelector<HTMLButtonElement>('#pet-button-decrease-hunger')!
+const hungerText = document.querySelector<HTMLSpanElement>('#hunger')!
 
-buttonIncrease.addEventListener("click", () => {
+buttonIncreaseHappiness.addEventListener("click", () => {
   pet.increaseHappiness(5)
+  updatePetVisual()
+})
+
+buttonDecreaseHunger.addEventListener("click", () => {
+  pet.decreaseHunger(5)
   updatePetVisual()
 })
 
@@ -46,7 +55,7 @@ function updatePetVisual() {
   // pet.updatePhysicalState();
   const mood = pet.getMood();
   happinessText.textContent = pet.happiness.toString()
-
+  hungerText.textContent = pet.hunger.toString()
   if(pet.physicalState === PhysicalState.Sleeping) {
     petImage.src =  sleepSprites[sleepFrame];
   } else {
@@ -67,6 +76,7 @@ setInterval(() => {
   elapsedLogic += 500;
   if (elapsedLogic >= logicInterval) {
     pet.decreaseHappiness(2);
+    pet.increaseHunger(2);
     pet.updatePhysicalState();
     elapsedLogic = 0;
   }

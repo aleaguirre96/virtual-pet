@@ -14,11 +14,12 @@ export type PhysicalState = (typeof PhysicalState)[keyof typeof PhysicalState];
 
 export class VirtualPet {
     happiness: number = 50;
+    hunger: number = 50;
     physicalState: PhysicalState = PhysicalState.Awake;
     lastWakeUpTime: number = Date.now();
     startSleepTime: number = 0;
-    sleepInterval: number = 60000// 180000;
-    minSleepTime: number = 20000//60000; 
+    sleepInterval: number = 180000;
+    minSleepTime: number = 60000; 
 
     increaseHappiness(amount: number) {
         this.happiness += amount;
@@ -28,6 +29,19 @@ export class VirtualPet {
     decreaseHappiness(amount: number) {
         this.happiness -= amount
         if (this.happiness < 0) this.happiness = 0;
+    }
+
+    increaseHunger(amount: number) {
+        this.hunger += amount;
+        if (this.hunger > 100) this.hunger = 100;
+    }
+    
+    decreaseHunger(amount: number) {
+        if (this.hunger > 0) { // Ignore decrease if hunger is 0
+            this.hunger -= amount
+            this.increaseHappiness(2) // increase the happinnes while the hunger > 0
+            if (this.hunger < 0) this.hunger = 0; // if the rest is negative hunger is 0
+        }
     }
 
     getMood(): PetMood {
