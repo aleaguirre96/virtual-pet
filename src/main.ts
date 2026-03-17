@@ -1,4 +1,4 @@
-import { PhysicalState, VirtualPet } from "./VirtualPet";
+import { PhysicalState, VirtualPet } from "./game/VirtualPet";
 
 const pet = new VirtualPet()
 
@@ -10,8 +10,6 @@ const petSprites = {
 };
 
 let sleepFrame = 0;
-let elapsedLogic = 0;
-const logicInterval = 10000;
 const sleepSprites = ["/assets/pet/pet-sleep-01.png", "/assets/pet/pet-sleep-02.png"];
 
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -64,26 +62,5 @@ function updatePetVisual() {
   console.log("inside updatePetVisual" + petSprites[mood] )
 }
 
-// Game loop
-setInterval(() => {
-  // Sleeping animation
-  if (pet.physicalState === PhysicalState.Sleeping) {
-    sleepFrame = (sleepFrame + 1) % sleepSprites.length;
-    petImage.src = sleepSprites[sleepFrame];
-  }
 
-  // Logic
-  elapsedLogic += 500;
-  if (elapsedLogic >= logicInterval) {
-    pet.decreaseHappiness(2);
-    pet.increaseHunger(2);
-    pet.updatePhysicalState();
-    elapsedLogic = 0;
-  }
-  
-  // Update UI
-  updatePetVisual()
-}, 500);
-
-
-updatePetVisual();
+// updatePetVisual();

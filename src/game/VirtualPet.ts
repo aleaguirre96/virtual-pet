@@ -18,8 +18,8 @@ export class VirtualPet {
     physicalState: PhysicalState = PhysicalState.Awake;
     lastWakeUpTime: number = Date.now();
     startSleepTime: number = 0;
-    sleepInterval: number = 180000;
-    minSleepTime: number = 60000; 
+    sleepInterval: number = 30000//180000;
+    minSleepTime: number = 10000//60000; 
 
     increaseHappiness(amount: number) {
         this.happiness += amount;

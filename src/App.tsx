@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
-import { PhysicalState, VirtualPet } from './VirtualPet'
+import { useState, useEffect, useCallback } from 'react'
+import { PhysicalState, VirtualPet } from './game/VirtualPet'
 import './App.css'
+import { useGameLoop } from './hooks/useGameLoop'
 
 const pet = new VirtualPet()
 
@@ -15,17 +16,15 @@ const sleepSprites = [
   "/assets/pet/pet-sleep-02.png"
 ]
 
-let elapsedLogic = 0
-const logicInterval =  10000
-
 function App() {
   const [, forceRender] = useState({})
   const [sleepFrame, setSleepFrame] = useState(0);
 
+  const forceUpdate = useCallback(() => {
+    forceRender({});
+  }, []);
 
-  function updatePetVisual() {
-    forceRender({})
-  }
+  useGameLoop(pet, forceUpdate)
 
   function getPetImage() {
     const mood = pet.getMood()
@@ -37,45 +36,32 @@ function App() {
 
   // Loop de decreaseHappiness 
   useEffect(() => {
-    const loop = setInterval(() => {
-      
+    const animation = setInterval(() => {
       // Sleeping animation
       if (pet.getPhysicalState() === PhysicalState.Sleeping) {
         setSleepFrame(prev => (prev + 1) % sleepSprites.length)
       }
-
-      // Logic
-      elapsedLogic += 500
-      if (elapsedLogic >= logicInterval) {
-        pet.decreaseHappiness(2)
-        pet.increaseHunger(2)
-        pet.updatePhysicalState()
-        elapsedLogic = 0
-      }
-      
-      updatePetVisual();
     }, 500);
-
-    return () => clearInterval(loop);
+    return () => clearInterval(animation);
   }, []);
 
   // Increase Happiness
   const handleIncreaseHappiness = () => {
     pet.increaseHappiness(5);
-    updatePetVisual();
+    forceUpdate();
   }
   
   // Decrease Hunger
   const handleDecreaseHunger = () => {
-    pet.decreaseHunger(5)
-    updatePetVisual();
+    pet.decreaseHunger(5);
+    forceUpdate();
   }
 
   // Wakeup pet
   const handleWakeUp = () => {
     if(pet.getPhysicalState() === PhysicalState.Sleeping) {
-      pet.wakeUp()
-      updatePetVisual();
+      pet.wakeUp();
+      forceUpdate();
     }
   }
 
