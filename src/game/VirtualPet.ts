@@ -27,24 +27,24 @@ export type FoodType = (typeof FoodType)[keyof typeof FoodType];
 export type PetAction = (typeof PetAction)[keyof typeof PetAction];
 
 type FoodEffect = {
-    hunger: number,
+    fullness: number,
     happiness?: number
 }
 
 const foodEffectMap: Record<FoodType, FoodEffect> = {
-    protein: { hunger: 12, happiness: 10 },
-    carbs: { hunger: 5, happiness: 5 },
-    vegetable: { hunger: 2 }
+    protein: { fullness: 15, happiness: 8 },
+    carbs: { fullness: 10, happiness: 3 },
+    vegetable: { fullness: 5 }
 }
 
 export class VirtualPet {
     happiness: number = 50;
-    hunger: number = 50;
+    fullness: number = 50;
     physicalState: PhysicalState = PhysicalState.Awake;
     currentAction: PetAction = PetAction.Idle;
     lastWakeUpTime: number = Date.now();
     startSleepTime: number = 0;
-    sleepInterval: number = 60000; // 180000;
+    sleepInterval: number = 180000;
     minSleepTime: number = 60000;
     actionTimer: number = 0;
     eatingDuration: number = 5000;
@@ -62,16 +62,16 @@ export class VirtualPet {
         if (this.happiness < 0) this.happiness = 0;
     }
 
-    increaseHunger(amount: number) {
-        this.hunger += amount;
-        if (this.hunger > 100) this.hunger = 100;
+    decreaseFullness(amount: number) {
+        this.fullness -= amount;
+        if (this.fullness < 0) this.fullness = 0;
     }
     
-    decreaseHunger(amount: number) {
-        if (this.hunger > 0) { // Ignore decrease if hunger is 0
-            this.hunger -= amount
-            this.increaseHappiness(2) // increase the happinnes while the hunger > 0
-            if (this.hunger < 0) this.hunger = 0; // if the rest is negative hunger is 0
+    increaseFullness(amount: number) {
+        if (this.fullness <= 100) { // Ignore increase if fullness is already at maximum
+            this.fullness += amount;
+            this.increaseHappiness(2); // Increase happiness when fullness increases as base effect
+            if (this.fullness > 100) this.fullness = 100;
         }
     }
 
@@ -110,8 +110,8 @@ export class VirtualPet {
     }
 
     feed(food: FoodType) {
-        if(this.currentAction !== PetAction.Idle) return; // Ignore if already eating
-
+        if(this.currentAction === PetAction.Eating) return; // Ignore if already eating
+        if(this.physicalState === PhysicalState.Sleeping) return; // Ignore if sleeping
         this.selectedFood = food;
         this.currentAction = PetAction.Eating
         this.actionTimer = 0;
@@ -119,7 +119,7 @@ export class VirtualPet {
 
     applyFoodEffect(selectedFood: FoodType) {
         const effect = foodEffectMap[selectedFood];
-        this.decreaseHunger(effect.hunger);
+        this.increaseFullness(effect.fullness);
         if(this.happiness <= 100 && effect.happiness) {
             this.increaseHappiness(effect.happiness)
         }
@@ -143,7 +143,7 @@ export class VirtualPet {
         this.elapsedLogic += 500;
         if (this.elapsedLogic >= this.logicInterval) {
             this.decreaseHappiness(2);
-            this.increaseHunger(2);
+            this.decreaseFullness(2);
             this.updatePhysicalState();
             this.elapsedLogic = 0;
         }
@@ -151,3 +151,9 @@ export class VirtualPet {
         this.updatePhysicalState();
     }
 }
+
+/**
+ * 50 + 12 = 62 fullness, 50 + 10 = 60 happiness (+ 2 base increase) = 62 happiness
+ * 50 + 2 = 52 fullness, 50 + 0 = 50 happiness (+ 2 base increase) = 52 happiness
+ * 50 + 5 = 55 fullness, 50 + 5 = 55 happiness (+ 2 base increase) = 57 happiness
+ */
