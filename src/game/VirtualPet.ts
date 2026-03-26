@@ -9,13 +9,39 @@ export const PhysicalState = {
     Sleeping: "sleeping"
 } as const;
 
+export const FoodType = {
+    Protein: "protein",
+    Carbs: "carbs",
+    Vegetable: "vegetable"
+} as const;
+
+export const PetAction = {
+    Idle: "idle",
+    Sleeping: "sleeping",
+    Eating: "eating"
+}
+
 export type PetMood = (typeof PetMood)[keyof typeof PetMood];
 export type PhysicalState = (typeof PhysicalState)[keyof typeof PhysicalState];
+export type FoodType = (typeof FoodType)[keyof typeof FoodType];
+export type PetAction = (typeof PetAction)[keyof typeof PetAction];
+
+type FoodEffect = {
+    hunger: number,
+    happiness?: number
+}
+
+const foodEffectMap: Record<FoodType, FoodEffect> = {
+    protein: { hunger: 10, happiness: 2 },
+    carbs: { hunger: 5, happiness: 1 },
+    vegetable: { hunger: 2 }
+}
 
 export class VirtualPet {
     happiness: number = 50;
     hunger: number = 50;
     physicalState: PhysicalState = PhysicalState.Awake;
+    currentAction: PetAction = PetAction.Idle;
     lastWakeUpTime: number = Date.now();
     startSleepTime: number = 0;
     sleepInterval: number = 30000//180000;
@@ -59,28 +85,31 @@ export class VirtualPet {
     }
 
     updatePhysicalState() {
-        console.log("inside updatePhysical State")
         const now = Date.now();
         if (this.physicalState === PhysicalState.Awake && now - this.lastWakeUpTime >= this.sleepInterval) {
             this.sleep()
         }
-        console.log(now + " - " + this.lastWakeUpTime + " > " + this.sleepInterval);
-        console.log("now - lastWakeUpTime = " + (now - this.lastWakeUpTime))
     }
 
     wakeUp() {
-        console.log("inside wakeup")
         const now = Date.now()
         if (now - this.startSleepTime >= this.minSleepTime) {
             this.physicalState = PhysicalState.Awake;
             this.lastWakeUpTime = Date.now();
         }
-         console.log("now - startSleepTime = " + (now - this.startSleepTime))
-         console.log(now + " - " + this.startSleepTime + " >= " + this.minSleepTime);
     }
 
     sleep() {
         this.physicalState = PhysicalState.Sleeping;
         this.startSleepTime = Date.now()
+    }
+
+    feed(food: FoodType) {
+        const effect = foodEffectMap[food];
+        this.decreaseHunger(effect.hunger);
+        if(effect.happiness) {
+            this.increaseHappiness(effect.happiness)
+        }
+        this.currentAction = PetAction.Eating
     }
 }
