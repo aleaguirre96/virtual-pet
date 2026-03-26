@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { PhysicalState, VirtualPet } from './game/VirtualPet'
+import { PhysicalState, FoodType, VirtualPet, PetAction } from './game/VirtualPet'
 import './App.css'
 import { useGameLoop } from './hooks/useGameLoop'
 
@@ -16,9 +16,16 @@ const sleepSprites = [
   "/assets/pet/pet-sleep-02.png"
 ]
 
+const feedSprites = [
+  "/assets/pet/pet-feed-01.png",
+  "/assets/pet/pet-feed-02.png"
+]
+
 function App() {
-  const [, forceRender] = useState({})
+  const [, forceRender] = useState({});
   const [sleepFrame, setSleepFrame] = useState(0);
+  const [selectedFood, setSelectedFood] = useState("protein");
+  const [feedFrame, setFeedFrame] = useState(0);
 
   const forceUpdate = useCallback(() => {
     forceRender({});
@@ -30,16 +37,23 @@ function App() {
     const mood = pet.getMood()
     if (pet.getPhysicalState() === PhysicalState.Sleeping) {
       return sleepSprites[sleepFrame]
+    } else if (pet.currentAction === PetAction.Eating) {
+      return feedSprites[feedFrame]
     }
+
     return petSprites[mood]
   }
 
-  // Loop de decreaseHappiness 
+  // Loop animation
   useEffect(() => {
     const animation = setInterval(() => {
       // Sleeping animation
       if (pet.getPhysicalState() === PhysicalState.Sleeping) {
         setSleepFrame(prev => (prev + 1) % sleepSprites.length)
+      }
+      // Feeding animation
+      if (pet.currentAction === PetAction.Eating) {
+        setFeedFrame(prev => (prev + 1) % feedSprites.length)
       }
     }, 500);
     return () => clearInterval(animation);
@@ -52,8 +66,14 @@ function App() {
   }
   
   // Decrease Hunger
-  const handleDecreaseHunger = () => {
+  /*const handleDecreaseHunger = () => {
     pet.decreaseHunger(5);
+    forceUpdate();
+  }*/
+
+  // Feed Pet
+  const handleFeed = () => {
+    pet.feed(selectedFood as FoodType)
     forceUpdate();
   }
 
@@ -81,8 +101,14 @@ function App() {
           <button onClick={handleIncreaseHappiness}>Increase Happines</button>
           <p>Happiness: {pet.happiness}</p>
           <br />
-          <button onClick={handleDecreaseHunger}>Decrease Hunger</button>
+          <button onClick={handleFeed}>Feed Pet</button>
           <p>Hunger: {pet.hunger}</p>
+          <br />
+          <select onChange={(e) => setSelectedFood(e.target.value as FoodType)}>
+            <option value="protein">Protein</option>
+            <option value="carbs">Carbs</option>
+            <option value="vegetable">Vegetable</option>
+          </select>
         </div>
       </section>
     </>
