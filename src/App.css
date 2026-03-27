@@ -31,7 +31,7 @@
   color: #f9fafb;
   padding: 20px;
   border-radius: 15px;
-  width: 260px;
+  width: 75%;
   margin: 20px auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: left;
@@ -90,4 +90,83 @@ button:hover {
 select {
   border-radius: 8px;
   padding: 5px;
+}
+
+.carousel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.slide {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.carousel-container {
+  position: relative;
+  overflow: visible;
+}
+
+.nav {
+  position: absolute;
+  top: 0;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  width: 50px;
+  height: 100%;
+  
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.nav.left {
+  left: 0;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.nav.right {
+  right: 0;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.carousel-container:hover .nav {
+  opacity: 1;
+}
+
+.nav.left:hover {
+  background: linear-gradient(to right,
+      rgba(31, 41, 55, 0.9),
+      rgba(31, 41, 55, 0));
+  animation: edgeGlow 2s infinite;
+}
+
+.nav.right:hover {
+  background: linear-gradient(to left,
+      rgba(31, 41, 55, 0.9),
+      rgba(31, 41, 55, 0));
+  animation: edgeGlow 2s infinite;
+}
+
+@keyframes edgeGlow {
+  0% {
+    box-shadow: 0 0 0px rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(255, 255, 255, 0);
+  }
 }
