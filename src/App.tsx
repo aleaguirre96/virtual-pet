@@ -3,7 +3,7 @@ import { PhysicalState, FoodType, VirtualPet, PetAction } from './game/VirtualPe
 import './App.css'
 import { useGameLoop } from './hooks/useGameLoop'
 import { StatBar } from './components/StatBar'
-import { getFullnessColor, getMoodColor } from './utils/colors'
+import { getEnergyColor, getFullnessColor, getMoodColor } from './utils/colors'
 
 const pet = new VirtualPet()
 
@@ -40,7 +40,7 @@ function App() {
 
   function getPetImage() {
     const mood = pet.getMood()
-    if (pet.getPhysicalState() === PhysicalState.Sleeping) {
+    if (pet.currentAction === PetAction.Sleeping) {
       return sleepSprites[sleepFrame]
     } else if (pet.currentAction === PetAction.Eating) {
       return feedSprites[feedFrame]
@@ -53,7 +53,7 @@ function App() {
   useEffect(() => {
     const animation = setInterval(() => {
       // Sleeping animation
-      if (pet.getPhysicalState() === PhysicalState.Sleeping) {
+      if (pet.currentAction === PetAction.Sleeping) {
         setSleepFrame(prev => (prev + 1) % sleepSprites.length)
       }
       // Feeding animation
@@ -64,9 +64,9 @@ function App() {
     return () => clearInterval(animation);
   }, []);
 
-  // Increase Happiness
-  const handleIncreaseHappiness = () => {
-    pet.increaseHappiness(5);
+  // Play with pet
+  const handlePlayPet = () => {
+    pet.play();
     forceUpdate();
   }
   
@@ -99,7 +99,7 @@ function App() {
         return (
           <div>
             <h2>Play</h2>
-            <button onClick={handleIncreaseHappiness}>Play with Pet</button>
+            <button onClick={handlePlayPet}>Play with Pet</button>
           </div>
         );
       case "feed":
@@ -130,6 +130,13 @@ function App() {
               <StatBar
                 value={pet.fullness}
                 color={getFullnessColor(pet.fullness)}
+              />
+            </div>
+            <div className="stat">
+              <p>Energy: {Math.floor(pet.getEnergyLevel())}</p>
+              <StatBar
+                value={pet.getEnergyLevel()}
+                color={getEnergyColor(pet.getEnergyLevel())}
               />
             </div>
           </div>

@@ -16,3 +16,10 @@ export function getFullnessColor(fullness: number) {
   if (fullness < 70) return "#facc15";
   return "#22c55e";
 }
+
+export function getEnergyColor(energy: number) {
+  if (energy < 20) return "#ef4444";
+  if (energy < 50) return "#f97316";
+  if (energy < 80) return "#facc15";
+  return "#22c55e";
+}
