@@ -119,14 +119,14 @@ function App() {
           <div className="stats">
             <h2>Stats</h2>
             <div className="stat">
-              <p>Happiness: {pet.happiness}</p>
+              <p>Happiness: {Math.floor(pet.happiness)}</p>
               <StatBar
                 value={pet.happiness}
                 color={getMoodColor(pet.getMood())}
               />
             </div>
             <div className="stat">
-              <p>Fullness: {pet.fullness}</p>
+              <p>Fullness: {Math.floor(pet.fullness)}</p>
               <StatBar
                 value={pet.fullness}
                 color={getFullnessColor(pet.fullness)}
@@ -153,13 +153,15 @@ function App() {
           />
 
           <div className="card carousel-container">
-            <button className="nav left" onClick={handlePrevSlide}>{"<"}</button>
+            
             <div className="carousel">
+              <button className="nav left" onClick={handlePrevSlide}>{"<"}</button>
               <div className="slide">
                 {renderSlide()}
               </div>
+              <button className="nav right" onClick={handleNextSlide}>{">"}</button>
             </div>
-            <button className="nav right" onClick={handleNextSlide}>{">"}</button>
+            
           </div>
 
         </div>
