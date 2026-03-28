@@ -49,7 +49,7 @@ export class VirtualPet {
     actionTimer: number = 0;
     eatingDuration: number = 5000;
     elapsedLogic: number = 0;
-    logicInterval: number = 10000;
+    logicInterval: number = 40000;
     selectedFood: FoodType = null as any;
 
     increaseHappiness(amount: number) {
@@ -142,8 +142,8 @@ export class VirtualPet {
 
         this.elapsedLogic += 500;
         if (this.elapsedLogic >= this.logicInterval) {
-            this.decreaseHappiness(2);
-            this.decreaseFullness(2);
+            this.decreaseHappiness(1.5);
+            this.decreaseFullness(0.5);
             this.updatePhysicalState();
             this.elapsedLogic = 0;
         }
@@ -151,9 +151,3 @@ export class VirtualPet {
         this.updatePhysicalState();
     }
 }
-
-/**
- * 50 + 12 = 62 fullness, 50 + 10 = 60 happiness (+ 2 base increase) = 62 happiness
- * 50 + 2 = 52 fullness, 50 + 0 = 50 happiness (+ 2 base increase) = 52 happiness
- * 50 + 5 = 55 fullness, 50 + 5 = 55 happiness (+ 2 base increase) = 57 happiness
- */

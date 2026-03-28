@@ -23,11 +23,14 @@ const feedSprites = [
   "/assets/pet/pet-feed-02.png"
 ]
 
+const slides = ["play", "feed", "stats"];
+
 function App() {
   const [, forceRender] = useState({});
   const [sleepFrame, setSleepFrame] = useState(0);
   const [selectedFood, setSelectedFood] = useState("protein");
   const [feedFrame, setFeedFrame] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const forceUpdate = useCallback(() => {
     forceRender({});
@@ -67,12 +70,6 @@ function App() {
     forceUpdate();
   }
   
-  // Decrease Hunger
-  /*const handleDecreaseHunger = () => {
-    pet.decreaseHunger(5);
-    forceUpdate();
-  }*/
-
   // Feed Pet
   const handleFeed = () => {
     pet.feed(selectedFood as FoodType)
@@ -87,53 +84,86 @@ function App() {
     }
   }
 
+  // Switch slides
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  }
+
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  }
+
+  function renderSlide() {
+    switch (slides[currentSlide]) {
+      case "play":
+        return (
+          <div>
+            <h2>Play</h2>
+            <button onClick={handleIncreaseHappiness}>Play with Pet</button>
+          </div>
+        );
+      case "feed":
+        return (
+          <div className="feed-section">
+            <h2>Feed</h2>
+            <select onChange={(e) => setSelectedFood(e.target.value as FoodType)}>
+              <option value="protein">Protein</option>
+              <option value="carbs">Carbs</option>
+              <option value="vegetable">Vegetable</option>
+            </select>
+            <button onClick={handleFeed}>Feed Pet</button>
+          </div>
+        );
+      case "stats":
+        return (
+          <div className="stats">
+            <h2>Stats</h2>
+            <div className="stat">
+              <p>Happiness: {Math.floor(pet.happiness)}</p>
+              <StatBar
+                value={pet.happiness}
+                color={getMoodColor(pet.getMood())}
+              />
+            </div>
+            <div className="stat">
+              <p>Fullness: {Math.floor(pet.fullness)}</p>
+              <StatBar
+                value={pet.fullness}
+                color={getFullnessColor(pet.fullness)}
+              />
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  }
+
   return (
     <>
       <section>
         <div>
           <h1>Virtual Pet</h1>
           <img
-          src={getPetImage()}
-          alt="Pet"
-          width={200}
-          onClick={handleWakeUp}
-          style={{ cursor: "pointer" }}
+            src={getPetImage()}
+            alt="Pet"
+            width={200}
+            onClick={handleWakeUp}
+            style={{ cursor: "pointer" }}
           />
 
-          <div className="card">
-            <h2>Controls</h2>
-            <div className="controls">
-              <button onClick={handleIncreaseHappiness}>Play</button>
-              <div className="feed-setion">
-                <select onChange={(e) => setSelectedFood(e.target.value as FoodType)}>
-                  <option value="protein">Protein</option>
-                  <option value="carbs">Carbs</option>
-                  <option value="vegetable">Vegetable</option>
-                </select>
-                <button onClick={handleFeed}>Feed Pet</button>
+          <div className="card carousel-container">
+            
+            <div className="carousel">
+              <button className="nav left" onClick={handlePrevSlide}>{"<"}</button>
+              <div className="slide">
+                {renderSlide()}
               </div>
+              <button className="nav right" onClick={handleNextSlide}>{">"}</button>
             </div>
-
-            <h2>Stats</h2>
-            <div className="stats">
-              <div className="stat">
-                <p>Happiness: {pet.happiness}</p>
-                <StatBar
-                  value={pet.happiness}
-                  color={getMoodColor(pet.getMood())}
-                />
-              </div>
-              <div className="stat">
-                <p>Fullness: {pet.fullness}</p>
-                <StatBar
-                  value={pet.fullness}
-                  color={getFullnessColor(pet.fullness)}
-                />
-              </div>
-            </div>
+            
           </div>
 
-       
         </div>
       </section>
     </>
