@@ -40,6 +40,7 @@ const foodEffectMap: Record<FoodType, FoodEffect> = {
 export class VirtualPet {
     happiness: number = 50;
     fullness: number = 50;
+    energy: number = 100;
     physicalState: PhysicalState = PhysicalState.Awake;
     currentAction: PetAction = PetAction.Idle;
     lastWakeUpTime: number = Date.now();
@@ -75,6 +76,16 @@ export class VirtualPet {
         }
     }
 
+    increaseEnergy(amount: number) {
+        this.energy += amount;
+        if (this.energy > 100) this.energy = 100;
+    }
+
+    decreaseEnergy(amount: number) {
+        this.energy -= amount;
+        if (this.energy < 0) this.energy = 0;
+    }
+
     getMood(): PetMood {
         if (this.happiness < 20) {
             return PetMood.Sad
@@ -97,16 +108,29 @@ export class VirtualPet {
     }
 
     wakeUp() {
-        const now = Date.now()
-        if (now - this.startSleepTime >= this.minSleepTime) {
-            this.physicalState = PhysicalState.Awake;
+        const sleepDuration = this.getSleepDuration();
+        if (sleepDuration >= this.minSleepTime) {
+            const energyRestored = this.calculateEnergyRestoration(sleepDuration); // Restore energy based on sleep duration
+            this.increaseEnergy(energyRestored); // Restore energy on wakeup
             this.lastWakeUpTime = Date.now();
+            // Reset sleep timer and action state
+            this.startSleepTime = 0; // Reset sleep timer
+            this.physicalState = PhysicalState.Awake;
+            this.currentAction = PetAction.Idle;
         }
     }
 
     sleep() {
         this.physicalState = PhysicalState.Sleeping;
-        this.startSleepTime = Date.now()
+        this.startSleepTime = Date.now();
+        this.currentAction = PetAction.Sleeping;
+    }
+
+    play() {
+        if(this.physicalState === PhysicalState.Sleeping) return; // Ignore if sleeping
+        if(this.currentAction === PetAction.Eating) return; // Ignore if eating
+        this.increaseHappiness(5);
+        this.decreaseEnergy(8);
     }
 
     feed(food: FoodType) {
@@ -122,6 +146,23 @@ export class VirtualPet {
         this.increaseFullness(effect.fullness);
         if(this.happiness <= 100 && effect.happiness) {
             this.increaseHappiness(effect.happiness)
+        }
+    }
+
+    getSleepDuration(): number {
+        const now = Date.now();
+        return now - this.startSleepTime; 
+    }
+
+    calculateEnergyRestoration(sleepDuration: number): number {
+        return Math.floor((sleepDuration / 60000) * 10);
+    }
+
+    getEnergyLevel(): number {
+        if (this.physicalState === PhysicalState.Sleeping) {
+            return this.energy + this.calculateEnergyRestoration(this.getSleepDuration()); // Calculate energy based on sleep duration
+        } else {
+            return this.energy;
         }
     }
 
