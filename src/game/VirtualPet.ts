@@ -130,7 +130,7 @@ export class VirtualPet {
         if(this.physicalState === PhysicalState.Sleeping) return; // Ignore if sleeping
         if(this.currentAction === PetAction.Eating) return; // Ignore if eating
         this.increaseHappiness(5);
-        this.decreaseEnergy(15);
+        this.decreaseEnergy(8);
     }
 
     feed(food: FoodType) {
